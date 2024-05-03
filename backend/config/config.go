@@ -14,7 +14,7 @@ func loadEnv() {
 }
 
 func FB_SECRET_CREDENTIAL() string {
-	loadEnv()
+	// loadEnv()
 	v, ok := os.LookupEnv("FB_SECRET_CREDENTIAL")
 	if !ok {
 		panic("FB_SECRET_CREDENTIAL is not set")
