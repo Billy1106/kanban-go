@@ -1,4 +1,4 @@
-package repositories
+package firestore
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// type FirestoreRepository struct {
+// type FirestoreRepositoryImpl struct {
 // 	GetAllTasks func() ([]models.Task, error)
 // 	GetTask     func(id int) (models.Task, error)
 // 	CreateTask  func(task models.Task) (models.Task, error)
@@ -20,13 +20,17 @@ import (
 // 	DeleteTask  func(id int) error
 // }
 
+type FirestoreRepository interface {
+	GetAllTasks(ctx context.Context) ([]models.Task, error)
+}
+
 type FirestoreRepositoryImpl struct {
 	client *firestore.Client
 }
 
 var repository *FirestoreRepositoryImpl
 
-func NewFirestoreRepository(ctx context.Context) (*FirestoreRepositoryImpl, error) {
+func NewFirestoreRepository(ctx context.Context) (FirestoreRepository, error) {
 	app, err := firebase.NewApp(ctx, nil, option.WithCredentialsJSON([]byte(config.FB_SECRET_CREDENTIAL())))
 	if err != nil {
 		panic(err)
