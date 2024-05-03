@@ -2,11 +2,12 @@ package repositories
 
 import (
 	"context"
+	"kanban-go/config"
 	"kanban-go/models"
-	"log"
 
 	firestore "cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
+	"google.golang.org/api/option"
 
 	"time"
 )
@@ -25,11 +26,12 @@ type FirestoreRepositoryImpl struct {
 
 var repository *FirestoreRepositoryImpl
 
-func NewFirestoreRepository(ctx context.Context, app *firebase.App) (*FirestoreRepositoryImpl, error) {
-	client, err := app.Firestore(ctx)
+func NewFirestoreRepository(ctx context.Context) (*FirestoreRepositoryImpl, error) {
+	app, err := firebase.NewApp(ctx, nil, option.WithCredentialsJSON([]byte(config.FB_SECRET_CREDENTIAL())))
 	if err != nil {
 		panic(err)
 	}
+	client, err := app.Firestore(ctx)
 	repository = &FirestoreRepositoryImpl{
 		client: client,
 	}
@@ -38,7 +40,7 @@ func NewFirestoreRepository(ctx context.Context, app *firebase.App) (*FirestoreR
 }
 
 // Note r is a pointer receiver
-func (r *FirestoreRepositoryImpl) GetAllTasks(ctx context.Context, client *firebase.App) ([]models.Task, error) {
+func (r *FirestoreRepositoryImpl) GetAllTasks(ctx context.Context) ([]models.Task, error) {
 	docs := r.client.Collection("tasks").Documents(ctx)
 	tasks := []models.Task{}
 
@@ -53,12 +55,11 @@ func (r *FirestoreRepositoryImpl) GetAllTasks(ctx context.Context, client *fireb
 			panic("status is not a document ref")
 		}
 
+		// Get the status document
 		docStatus, err := r.client.Doc("statuses/" + statusRef.ID).Get(ctx)
 		if err != nil {
 			panic(err)
 		}
-
-		log.Print(docStatus.Data())
 
 		status := models.Status{
 			ID:   docStatus.Ref.ID,
