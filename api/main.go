@@ -1,26 +1,30 @@
 package main
 
 import (
-	firebase "firebase.google.com/go"
-	"google.golang.org/api/option"
-
-	config "kanban-go/config"
-
 	"context"
+	"net/http"
+
+	"kanban-go/repositories/firestore"
+
+	v1 "kanban-go/server/handlers/v1"
+
+	usecases "kanban-go/usecases"
 )
 
 func main() {
 
 	ctx := context.Background()
 
-	app, err := firebase.NewApp(ctx, nil, option.WithCredentialsJSON([]byte(config.FB_SECRET_CREDENTIAL())))
-	if err != nil {
-		panic("error initializing app: " + err.Error())
-	}
-	client, err := app.Firestore(ctx)
+	fr, err := firestore.NewFirestoreRepository(ctx)
 	if err != nil {
 		panic(err)
 	}
+	fu := usecases.NewTaskUsecase(fr)
+	fh := v1.NewTaskHandler(fu)
 
-	defer client.Close()
+	// http://localhost:8080/v1/tasks
+	http.HandleFunc("/v1/tasks", fh.GetAllTasks)
+
+	http.ListenAndServe(":8080", nil)
+
 }
