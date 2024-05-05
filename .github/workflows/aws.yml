@@ -33,6 +33,8 @@ on:
       - "backend/**"
       - ".github/workflows/**"
 
+  
+
 env:
   AWS_REGION: us-east-1                   # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: prd_go_kanban_api_server_repository           # set this to your Amazon ECR repository name
@@ -42,6 +44,9 @@ env:
                                                # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: prd_go_kanban_container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Deploy
