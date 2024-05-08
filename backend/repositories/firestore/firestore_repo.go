@@ -12,14 +12,6 @@ import (
 	"time"
 )
 
-// type FirestoreRepositoryImpl struct {
-// 	GetAllTasks func() ([]models.Task, error)
-// 	GetTask     func(id int) (models.Task, error)
-// 	CreateTask  func(task models.Task) (models.Task, error)
-// 	UpdateTask  func(task models.Task) (models.Task, error)
-// 	DeleteTask  func(id int) error
-// }
-
 type FirestoreRepository interface {
 	GetAllTasks(ctx context.Context) ([]models.Task, error)
 }
